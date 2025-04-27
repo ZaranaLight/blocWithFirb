@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:untitled/state/userState.dart';
-import 'package:untitled/view/userList.dart';
+import 'package:untitled/homeScreen.dart';
 
-import 'cubit/userCubit.dart';
-import 'model/user.dart';
+import 'firebase/cubit/userCubit.dart';
+import 'firebase/view/userList.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,10 +31,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: BlocProvider(
-        create: (context) => UserCubit(),
-        child: UserListScreen(),
-      ),
+      home: HomeScreen(),
     );
   }
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubit/userCubit.dart';
 import '../model/user.dart';
-import '../state/userState.dart';
 
 class UserListScreen extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
@@ -12,10 +11,10 @@ class UserListScreen extends StatelessWidget {
   UserListScreen({super.key});
 
   void showAddUserDialog(
-      BuildContext context1, {
-        bool? isUpdate = false,
-        String? updatedId,
-      }) {
+    BuildContext context1, {
+    bool? isUpdate = false,
+    String? updatedId,
+  }) {
     showDialog(
       context: context1,
       builder: (context) {
@@ -62,20 +61,31 @@ class UserListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).canvasColor,
       appBar: AppBar(
         title: Text("User List"),
         actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
+          InkWell(
+            onTap: () {
               showAddUserDialog(context);
             },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 15),
+              width: 100,
+              height: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.orangeAccent,
+              ),
+              child: Center(child: Text('Add')),
+            ),
           ),
         ],
       ),
-      body:StreamBuilder<List<User>>(
+
+      body: StreamBuilder<List<User>>(
         stream: context.read<UserCubit>().getUsers(),
-        builder: (context,snapshot) {
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
@@ -86,44 +96,45 @@ class UserListScreen extends StatelessWidget {
           return ListView.builder(
             itemCount: users?.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                title: Text(users?[index].name ?? ""),
-                subtitle: Text(users?[index].email ?? ""?? ""),
-                trailing: SizedBox(
-                  width: 100,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          nameController.text =
-                              users?[index].name ?? "";
-                          emailController.text =
-                              users?[index].email ?? "";
-
-                          showAddUserDialog(
-                            context,
-                            isUpdate: true,
-                            updatedId: users?[index].id,
-                          );
-                        },
-                        icon: Icon(Icons.edit, size: 15),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          context.read<UserCubit>().deleteUser(users![index].id);
-
-
-                        },
-                        icon: Icon(Icons.delete, size: 15),
-                      ),
-                    ],
+              return Card(
+                margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                  title: Text(users?[index].name ?? ""),
+                  subtitle: Text(users?[index].email ?? "" ?? ""),
+                  trailing: SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            nameController.text = users?[index].name ?? "";
+                            emailController.text = users?[index].email ?? "";
+                
+                            showAddUserDialog(
+                              context,
+                              isUpdate: true,
+                              updatedId: users?[index].id,
+                            );
+                          },
+                          icon: Icon(Icons.edit, size: 15),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            context.read<UserCubit>().deleteUser(
+                              users![index].id,
+                            );
+                          },
+                          icon: Icon(Icons.delete, size: 15),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
             },
           );
-        }
+        },
       ),
     );
   }
